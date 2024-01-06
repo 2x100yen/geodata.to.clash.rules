@@ -31,6 +31,9 @@ jobs:
               ./convert.sh $file
             done
 
-        - name: checks
+        - name: upload releases
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            cat outs/*.txt | sed '/^\s*$/d' | shuf -n 30
+            gh release create --latest "$(date +%Y-%m-%d.%H.%M.%S)" \
+              outs/*.txt
