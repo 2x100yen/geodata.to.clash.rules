@@ -25,6 +25,12 @@ jobs:
               -exportlists category-ads-all,tencent,alibaba,bilibili,netease,qiniu,ucloud,zhihu
             cd ..
 
+        - name: convert
+          run: |
+            for file in outs/*.txt; do
+              ./convert.sh $file
+            done
+
         - name: checks
           run: |
-            ls -1 outs
+            cat outs/*.txt | sed '/^\s*$/d' | shuf -n 30
