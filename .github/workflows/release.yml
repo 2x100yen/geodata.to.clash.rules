@@ -22,7 +22,7 @@ jobs:
             mkdir ../outs
             ./dlc \
               -outputdir ../outs \
-              -exportlists category-ads-all,tencent,alibaba,bilibili,netease,qiniu,ucloud,zhihu,jd
+              -exportlists category-ads-all,tencent,alibaba,bilibili,netease,qiniu,ucloud,zhihu,jd,category-bank-cn
             cd ..
 
         - name: convert
