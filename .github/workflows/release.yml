@@ -1,0 +1,29 @@
+name: build and release
+
+on:
+    schedule: [{ cron: "0 0 */4 * *" }]
+
+jobs:
+    build-and-release:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: checkout
+          uses: actions/checkout@v4
+
+        - name: clone domain-list-community
+          run: git clone https://github.com/v2fly/domain-list-community
+
+        - name: export geodata to txt
+          run: |
+            cd domain-list-community
+            go build -o dlc .
+            mkdir ../outs
+            ./dlc \
+              -outputdir ../outs \
+              -exportlists category-ads-all,tencent,alibaba,bilibili,netease,qiniu,ucloud,zhihu
+            cd ..
+
+        - name: checks
+          run: |
+            ls -1 outs
