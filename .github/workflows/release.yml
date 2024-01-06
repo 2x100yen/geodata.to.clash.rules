@@ -1,0 +1,44 @@
+name: build and release
+
+on:
+    schedule: [{ cron: "0 0 */4 * *" }]
+    workflow_dispatch:
+
+jobs:
+    build-and-release:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: checkout
+          uses: actions/checkout@v4
+
+        - name: clone domain-list-community
+          run: git clone https://github.com/v2fly/domain-list-community
+
+        - name: export geodata to txt
+          run: |
+            cd domain-list-community
+            go build -o dlc .
+            mkdir ../outs
+            ./dlc \
+              -outputdir ../outs \
+              -exportlists category-ads-all,tencent,alibaba,bilibili,netease,qiniu,ucloud,zhihu,jd
+            cd ..
+
+        - name: convert
+          run: |
+            for file in outs/*.txt; do
+              ./convert.sh $file
+            done
+
+        - name: push to outs branch
+          run: |
+            cd outs
+            git init
+            git config --local user.name "github-actions[bot]"
+            git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git checkout -b outs
+            git add *.txt
+            git commit -m "$(date +%Y-%m-%d.%H.%M.%S)"
+            git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+            git push -f -u origin outs
